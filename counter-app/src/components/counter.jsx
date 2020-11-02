@@ -1,13 +1,7 @@
 import React, { Component } from "react";
 
 class Counter extends Component {
-  state = {
-    count: 0,
-    //imageUrl: "https://picsum.photos/200"
-    tags: [] //["tag1", "tag2", "tag3"]
-  };
-
-  renderTags() {
+  /*renderTags() {
     if (this.state.tags.length === 0) return <p>There are no tags!</p>; //or return null, to show nothing
     return (
       <ul>
@@ -16,38 +10,62 @@ class Counter extends Component {
         ))}
       </ul>
     );
+  }*/
+
+  componentDidUpdate(prevProps, prevState) {
+    // We can check here whether specific fields in props or state were changed and react to them
+    // Maybe get new data from the server using an ajax call
   }
 
-  handleIncrement = product => {
-    console.log(product);
-    this.setState({ count: this.state.count + 1 });
-  };
+  componentWillUnmount() {
+    //Called just before a component is removed from the DOM
+    //Cleanup here - timers, listeners, avoid memory leaks
+  }
 
   render() {
+    const { counter, onDelete, onIncrement, onDecrement } = this.props;
     return (
-      <div>
-        <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
-        <button
-          onClick={() => this.handleIncrement({ id: 1 })}
-          className="btn btn-secondary btn-sm"
-        >
-          Increment
-        </button>
-        {this.state.tags.length === 0 && "Please create a new tag!"}
-        {this.renderTags()}
+      <div className="row">
+        <div className="col-1">
+          <span className={this.getBadgeClasses(counter)}>
+            {this.formatValue(counter)}
+          </span>
+        </div>
+        <div className="col">
+          <button
+            onClick={() => onIncrement(counter)}
+            className="btn btn-secondary btn-sm m-2"
+          >
+            +
+          </button>
+          <button
+            onClick={() => onDecrement(counter)}
+            className={`btn btn-secondary btn-sm m-2 ${
+              counter.value > 0 ? "" : "disabled"
+            }`}
+          >
+            -
+          </button>
+          <button
+            onClick={() => onDelete(counter.id)}
+            className="btn btn-danger btn-sm m-2"
+          >
+            x
+          </button>
+        </div>
       </div>
     );
   }
 
-  getBadgeClasses() {
+  getBadgeClasses(counter) {
     let classes = "badge m-2 badge-";
-    classes += this.state.count === 0 ? "warning" : "primary";
+    classes += counter.value === 0 ? "warning" : "primary";
     return classes;
   }
 
-  formatCount() {
-    const { count } = this.state;
-    return count === 0 ? "Zero" : count;
+  formatValue(counter) {
+    const { value } = counter;
+    return value === 0 ? "Zero" : value;
   }
 }
 
